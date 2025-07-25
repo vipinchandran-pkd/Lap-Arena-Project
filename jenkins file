@@ -1,0 +1,104 @@
+pipeline {
+    agent any
+    tools {
+        jdk 'jdk17'
+    }
+    environment{
+        SCANNER_HOME=tool 'sonar-scanner'
+    }
+    stages {
+        stage('clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('git checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/didin2003/lapzone.git'
+            }
+        }
+        stage('sonarqube analysis') {
+            steps {
+                withSonarQubeEnv('sonar-server') {
+                    sh '$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=lapzone -Dsonar.projectKey=lapzone'
+                }
+            }
+        }
+        stage('quality gate') {
+            steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
+                }
+            }
+        }
+        stage('TRIVY FS SCAN') {
+            steps {
+                sh "trivy fs . > trivyfs.txt"
+            }
+        }
+        stage('Docker Build and Tag') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {
+                        sh 'docker build -t lapzone .'
+                        sh 'docker tag lapzone didin8080/lapzone:latest'
+                    }
+                }
+            }
+        }
+        stage('Push to dockerhub') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {
+                        sh 'docker push didin8080/lapzone:latest'
+                    }
+                }
+            }
+        }
+        stage('Docker scout image') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {
+                        sh 'docker-scout quickview didin8080/lapzone:latest'
+                        sh 'docker-scout cves didin8080/lapzone:latest'
+                        sh 'docker-scout recommendations didin8080/lapzone:latest'
+                    }
+                }
+            }
+        }
+        stage('TRIVY Image SCAN') {
+            steps {
+                sh "trivy image didin8080/lapzone:latest > trivyfs.txt"
+            }
+        }
+        stage('Deploy to Container') {
+            steps {
+                sh 'docker run -d --name lapzone -p 8000:8000 didin8080/lapzone:latest'
+            }
+        }
+    }
+    post {
+    always {
+        emailext attachLog: true,
+            subject: "'${currentBuild.result}'",
+            body: """
+                <html>
+                <body>
+                    <div style="background-color: #FFA07A; padding: 10px; margin-bottom: 10px;">
+                        <p style="color: white; font-weight: bold;">Project: ${env.JOB_NAME}</p>
+                    </div>
+                    <div style="background-color: #90EE90; padding: 10px; margin-bottom: 10px;">
+                        <p style="color: white; font-weight: bold;">Build Number: ${env.BUILD_NUMBER}</p>
+                    </div>
+                    <div style="background-color: #87CEEB; padding: 10px; margin-bottom: 10px;">
+                        <p style="color: white; font-weight: bold;">URL: ${env.BUILD_URL}</p>
+                    </div>
+                </body>
+                </html>
+            """,
+            to: 'didinpg8080@gmail.com',
+            mimeType: 'text/html',
+            attachmentsPattern: 'trivy.txt'
+        }
+    }
+}
