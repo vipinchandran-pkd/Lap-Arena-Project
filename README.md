@@ -332,7 +332,7 @@ Before pasting the pipeline script, do the following changes in the script
 2. In post actions stage in pipeline, make sure to give the email id you have configured in jenkins.
 3. Replace the checout repo and generate the link using Pipeline Syntax
 4. while generating the github link will will be in private.To get the link add credentials on the link 
-### Major things that you wnat to edit in this project .Goto `fitness/settings.py` on `ALLOWED_HOSTS` provide your `public-ip` of docker instance and save it. And build it.
+### Major things that you wnat to edit in this project .Goto `lapzone/settings.py` on `ALLOWED_HOSTS` provide your `public-ip` of docker instance and save it. And build it.
 
 
 ```groovy
