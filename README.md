@@ -27,7 +27,7 @@ python manage.py runserver 0.0.0.0:8000
 It will generate an ip address copy ip and paste it on the browser.
 
 
-Lapzone Project by Didin `<127.0.0.1:8000>`
+Lapzone Project by Vipin `<127.0.0.1:8000>`
 
 <div align="center">
 <img src="img/tested-locally.png" alt="Logo" height="500%" width="100%">
@@ -65,7 +65,7 @@ sudo apt-get update
 **Step 3: clone the repository**
 
 ```bash
-git clone https://github.com/didin8080/Lap-Arena.git
+git clone https://https://github.com/vipinchandra121/Lap-Arena-Project.git
 ```
 
 **Step 4: Install python**
