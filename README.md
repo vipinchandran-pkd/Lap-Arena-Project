@@ -388,7 +388,7 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {
-                        sh 'docker push didin8080/lapzone:latest'
+                        sh 'docker push vipinchandran-pkd/lapzone:latest'
                     }
                 }
             }
@@ -397,9 +397,9 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {
-                        sh 'docker-scout quickview didin8080/lapzone:latest'
+                        sh 'docker-scout quickview vipinchandran-pkd/lapzone:latest'
                         sh 'docker-scout cves didin8080/lapzone:latest'
-                        sh 'docker-scout recommendations didin8080/lapzone:latest'
+                        sh 'docker-scout recommendations vipinchandran-pkd/lapzone:latest'
                     }
                 }
             }
