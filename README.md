@@ -352,7 +352,7 @@ pipeline {
         }
         stage('git checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/didin2003/lapzone.git'
+                git branch: 'main', url: 'https://github.com/vipinchandran-pkd/lapzone.git'
             }
         }
         stage('sonarqube analysis') {
@@ -379,7 +379,7 @@ pipeline {
                 script {
                     withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {
                         sh 'docker build -t lapzone .'
-                        sh 'docker tag lapzone didin8080/lapzone:latest'
+                        sh 'docker tag lapzone vipinchandran-pkd/lapzone:latest'
                     }
                 }
             }
@@ -398,7 +398,7 @@ pipeline {
                 script {
                     withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {
                         sh 'docker-scout quickview vipinchandran-pkd/lapzone:latest'
-                        sh 'docker-scout cves didin8080/lapzone:latest'
+                        sh 'docker-scout cves vipinchandran-pkd/lapzone:latest'
                         sh 'docker-scout recommendations vipinchandran-pkd/lapzone:latest'
                     }
                 }
@@ -406,12 +406,12 @@ pipeline {
         }
         stage('TRIVY Image SCAN') {
             steps {
-                sh "trivy image didin8080/lapzone:latest > trivyfs.txt"
+                sh "trivy image vipinchandran-pkd/lapzone:latest > trivyfs.txt"
             }
         }
         stage('Deploy to Container') {
             steps {
-                sh 'docker run -d --name lapzone -p 8000:8000 didin8080/lapzone:latest'
+                sh 'docker run -d --name lapzone -p 8000:8000 vipinchandran-pkd/lapzone:latest'
             }
         }
     }
